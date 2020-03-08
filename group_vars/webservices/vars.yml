@@ -1,0 +1,39 @@
+telegraf_plugins_extra:
+  - name: nginx
+    options:
+      urls:
+        - "http://localhost/nginx_status"
+  - name: procstat
+    options:
+      pattern: "nginx"
+      prefix: "nginx"
+  - name: logparser
+    options:
+      files:
+        - "/var/log/nginx/*.log"
+      from_beginning: "false"
+      grok:
+        patterns:
+          - '%{CLIENT:client_ip} %{NOTSPACE:ident} %{NOTSPACE:auth} \[%{HTTPDATE:ts:ts-httpd}\]"(?:%{WORD:verb:tag} %{NOTSPACE:request} (?:HTTP/%{NUMBER:http_version:float})?|%{DATA})" %{NUMBER:resp_code:tag} (?:%{NUMBER:resp_bytes:int}|-)%{QS:referrer} %{QS:agent:tag}(?:%{NUMBER:request_time}|-) (?:%{NUMBER:upstream_connect_time}|-) %{NOTSPACE:x_forwarded_for} %{NOTSPACE:upstream_cache_status:tag}'
+        measurement: nginx_access_log
+  - name: logparser
+    options:
+      files:
+        - "/var/log/fail2ban.log"
+      from_beginning: "false"
+      grok:
+        patterns:
+          - '%{TIMESTAMP_ISO8601:timestamp} %{WORD:log_src}.%{WORD:src_action} *\[%{INT:fail2ban_digit}\]: %{WORD:loglevel:tag} *\[%{NOTSPACE:service:tag}\] %{GREEDYDATA:ban_status:tag} %{IP:clientip:tag}'
+        measurement: fail2ban_log
+  - name: fail2ban
+    options:
+      use_sudo: "false"
+  - name: x509_cert
+    options:
+      sources:
+        - https://home.prettybaked.com:443
+        - https://unifi.home.prettybaked.com:443
+        - https://unifi-admin.home.prettybaked.com:8443
+        - https://plex.home.prettybaked.com:443
+        - https://automation.home.prettybaked.com:8123
+        - https://pfsense.home.prettybaked.com:443

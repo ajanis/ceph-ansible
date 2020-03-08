@@ -1,0 +1,29 @@
+telegraf_plugins_extra:
+  - name: influxdb
+  - name: redis
+    options:
+      servers:
+        - "tcp://localhost:6379"
+
+docker_containers:
+  ceph_exporter:
+    description: "Prometheus Metrics Collector Ceph"
+    image: ceph_exporter
+    command: "-ceph.config /etc/ceph/ceph.conf"
+    network_mode: bridge
+    ports: 9128:9128
+    volumes:
+      - '{{ media_root }}/configs/ceph_exporter/ceph:/etc/ceph'
+  redis:
+    description: "Redis Server for Ansible Fact Caching"
+    image: redis:latest
+    network_mode: bridge
+    ports: 6379:6379
+    pull: yes
+    volumes:
+      - '{{ media_root }}/configs/redis:/data'
+
+docker_build_images:
+  ceph_exporter:
+    repo: "https://github.com/constructorfleet/ceph_exporter.git"
+    branch: luminous

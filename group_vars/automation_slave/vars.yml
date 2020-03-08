@@ -1,0 +1,23 @@
+---
+ssl_certpath: "{{ automation_mounted_directory }}/configs/{{ docker_ha_container_name}}/ssl/{{ www_domain }}.crt"
+ssl_keypath: "{{ automation_mounted_directory }}/configs/{{ docker_ha_container_name}}/ssl/{{ www_domain }}.key"
+
+telegraf_plugins_extra:
+  - name: docker
+    options:
+      endpoint: "unix:///var/run/docker.sock"
+      timeout: "5s"
+      perdevice: "true"
+      total: "true"
+
+docker_containers:
+  home-assistant:
+    description: "Home Assistant - Home Automation"
+    image: homeassistant/home-assistant:0.95.4
+    network_mode: host
+    devices:
+      - '/dev/ttyUSB0:/dev/ttyUSB0'
+      - '/dev/ttyUSB1:/dev/ttyUSB1'
+    volumes:
+      - '{{ automation_mounted_directory }}/configs/home-assistant_slave:/config'
+      - '/etc/localtime:/etc/localtime:ro'

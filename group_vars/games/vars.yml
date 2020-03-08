@@ -1,0 +1,42 @@
+---
+game_config_directory: 'games'
+
+telegraf_plugins_extra:
+  - name: docker
+    options:
+      endpoint: "unix:///var/run/docker.sock"
+      timeout: "5s"
+      perdevice: "true"
+      total: "true"
+
+docker_containers:
+  factorio:
+    description: "Factorio"
+    image: dtandersen/factorio:0.16
+    network_mode: host
+    env:
+      PUID: '0'
+      PGUID: '0'
+      version: 'latest'
+    volumes:
+      - '{{ data_mount_root }}/{{ configs_directory  }}/{{ game_config_directory  }}/factorio:/factorio'
+      - '/etc/localtime:/etc/localtime:ro'
+    ports:
+      - 34197:34197/udp
+      - 27015:27015/tcp
+  teamspeak:
+    description: "TeamSpeak Voice Chat"
+    image: teamspeak
+    network_mode: host
+    env:
+      PUID: '0'
+      PGUID: '0'
+      version: 'latest'
+      TS3SERVER_LICENSE: 'accept'
+    volumes:
+      - '{{ data_mount_root }}/{{ configs_directory  }}/{{ game_config_directory  }}/teamspeak:/var/ts3server'
+      - '/etc/localtime:/etc/localtime:ro'
+    ports:
+      - 9987:9987/udp
+      - 10011:10011
+      - 30033:30033

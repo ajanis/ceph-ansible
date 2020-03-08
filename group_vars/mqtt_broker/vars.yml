@@ -1,0 +1,20 @@
+---
+shared_storage: False
+use_ldap_automount: False
+afp_ldap_auth: False
+
+docker_containers:
+  mosquitto:
+    description: "MQTT Broker"
+    image: prologic/mosquitto:latest
+    network_mode: host
+    env:
+      PUID: '0'
+      PGID: '0'
+      VERSION: 'latest'
+    ports:
+      - '1883'
+      - '8883'
+    volumes:
+      - '/etc/localtime:/etc/localtime:ro'
+      - '/etc/mosquitto:/etc/mosquitto'

@@ -1,0 +1,58 @@
+---
+telegraf_plugins_extra:
+  - name: docker
+    options:
+      endpoint: "unix:///var/run/docker.sock"
+      timeout: "5s"
+      perdevice: "true"
+      total: "true"
+
+docker_containers:
+  plex:
+    description: "Plex Media Server"
+    image: plexinc/pms-docker:plexpass
+    network_mode: host
+    pull: yes
+    ports: []
+    volumes:
+      - '/etc/localtime:/etc/localtime:ro'
+      - '{{ media_root }}/configs/plex:/config'
+      - '{{ media_root }}/ssl:/ssl'
+      - '{{ media_root }}/tv:/tvshows'
+      - '{{ media_root }}/movies:/movies'
+      - '{{ media_root }}/4kmovies:/4kmovies'
+      - '{{ media_root }}/images:/photos'
+      - '/transcode:/transcode'
+    env:
+      TZ: '{{ timezone }}'
+      PLEX_UID: '{{ media_user_uid }}'
+      PLEX_GID: '{{ media_user_gid }}'
+      ALLOWED_NETWORKS: '10.0.0.0/8,172.16.0.0/16,192.168.0.0/16'
+      CHANGE_CONFIG_DIR_OWNERSHIP: 'false'
+  tautulli:
+    description: "Tautulli - Plex Media Server Usage Metrics"
+    image: tautulli/tautulli
+    network_mode: bridge
+    pull: yes
+    ports:
+      - 8181:8181
+    volumes:
+      - '/etc/localtime:/etc/localtime:ro'
+      - '{{ media_root }}/configs/tautulli:/config'
+      - '{{ media_root }}/configs/plex/Library/Application Support/Plex Media Server/Logs:/plex_logs:ro'
+    env:
+      TZ: '{{ timezone }}'
+      PUID: '{{ media_user_uid }}'
+      PGID: '{{ media_user_gid }}'
+      ADVANCED_GIT_BRANCH: 'nightly'
+  varken:
+    description: "Varken Metrics Collector"
+    image: boerderij/varken:develop
+    network_mode: host
+    pull: yes
+    volumes:
+      - '{{ media_root }}/configs/varken:/config'
+    env:
+      TZ: '{{ timezone }}'
+      PUID: '{{ media_user_uid }}'
+      PGID: '{{ media_user_gid }}'

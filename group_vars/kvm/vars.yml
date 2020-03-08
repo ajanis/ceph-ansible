@@ -1,0 +1,88 @@
+---
+telegraf_plugins_extra:
+  - name: bond
+    options:
+      host_proc: "/proc"
+      bond_interfaces:
+        - "bond0"
+  - name: ipmi_sensor
+    options:
+      interval: "30s"
+      metric_version: 2
+  - name: smart
+    options:
+      use_sudo: "true"
+  - name: temp
+  - name: sensors
+
+netplan_configuration:
+  network:
+    version: 2
+    ethernets:
+      eth0:
+        mtu: 9000
+      eth1:
+        mtu: 9000
+    bonds:
+      bond0:
+        interfaces:
+        - eth0
+        - eth1
+        mtu: 9000
+        parameters:
+          down-delay: 0
+          lacp-rate: fast
+          mii-monitor-interval: 100
+          mode: 802.3ad
+          transmit-hash-policy: layer3+4
+          up-delay: 0
+    bridges:
+      br0:
+        addresses:
+        - "{{ (ansible_default_ipv4.address + '/' + ansible_default_ipv4.netmask | string) | ipaddr('host/prefix') }}"
+        gateway4: 10.0.10.1
+        interfaces:
+        - bond0
+        mtu: 9000
+        nameservers:
+          addresses:
+          - 10.0.10.1
+          search:
+          - home.prettybaked.com
+        parameters:
+          forward-delay: 0
+          stp: false
+      br11:
+        interfaces:
+        - bond0.11
+        mtu: 9000
+        parameters:
+          forward-delay: 0
+          stp: false
+      br12:
+        interfaces:
+        - bond0.12
+        mtu: 9000
+        parameters:
+          forward-delay: 0
+          stp: false
+      br20:
+        interfaces:
+        - bond0.20
+        mtu: 9000
+        parameters:
+          forward-delay: 0
+          stp: false
+    vlans:
+      bond0.11:
+        id: 11
+        link: bond0
+        mtu: 9000
+      bond0.12:
+        id: 12
+        link: bond0
+        mtu: 9000
+      bond0.20:
+        id: 20
+        link: bond0
+        mtu: 9000
