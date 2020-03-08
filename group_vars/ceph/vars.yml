@@ -77,10 +77,33 @@ rbd_client_admin_socket_path: /var/run/ceph # must be writable by QEMU and allow
 monitor_address_block: 192.168.1.0/24
 ip_version: ipv4
 mon_use_fqdn: false # if set to true, the MON name used will be the fqdn in the ceph.conf
+
 cephfs: cephfs # name of the ceph filesystem
-cephfs_data: cephfs_data # name of the data pool for a given filesystem
-cephfs_metadata: cephfs_metadata # name of the metadata pool for a given filesystem
-cephfs_pools: []
+cephfs_data_pool:
+  name: "{{ cephfs_data if cephfs_data is defined else 'cephfs_data' }}"
+  pg_num: "4096"
+  pgp_num: "4096"
+  rule_name: "ec42_rule"
+  type: 1
+  erasure_profile: "ec42_profile"
+  expected_num_objects: ""
+  application: "cephfs"
+  size: "6"
+  min_size: "6"
+cephfs_metadata_pool:
+  name: "{{ cephfs_metadata if cephfs_metadata is defined else 'cephfs_metadata' }}"
+  pg_num: "{{ osd_pool_default_pg_num }}"
+  pgp_num: "{{ osd_pool_default_pg_num }}"
+  rule_name: "replicated_rule"
+  type: 1
+  erasure_profile: ""
+  expected_num_objects: ""
+  application: "cephfs"
+  size: "3"
+  min_size: "3"
+cephfs_pools:
+  - "{{ cephfs_data_pool }}"
+  - "{{ cephfs_metadata_pool }}"
 is_hci: false
 non_hci_safety_factor: 0.7
 osd_memory_target: 1073741824
