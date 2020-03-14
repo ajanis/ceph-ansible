@@ -1,5 +1,5 @@
 #!/bin/zsh
-export VAULTPATH=VAULTPATH=${0:a:h}
+export VAULTPATH=${0:a:h}
 
 export ANSIBLE_VAULT_PASSWORD_FILE=${VAULTPATH}/.vault
 export ANSIBLE_INVENTORY=${VAULTPATH}/inventory
