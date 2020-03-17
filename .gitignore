@@ -10,6 +10,7 @@ group_vars/mdss
 group_vars/rgws
 group_vars/*.yml
 host_vars/*.yml
+inventory
 *.DS_Store
 *.pyc
 *.sw?
@@ -22,3 +23,4 @@ ceph-ansible.spec
 !raw_install_python.yml
 /fact_cache/*
 .vault*
+
