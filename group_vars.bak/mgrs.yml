@@ -1,5 +1,0 @@
----
-dummy:
-ceph_mgr_modules:
-  - status
-  - dashboard
