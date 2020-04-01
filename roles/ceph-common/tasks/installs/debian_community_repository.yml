@@ -16,6 +16,19 @@
 - name: configure debian ceph stable community repository
   apt_repository:
     filename: ceph
+    repo: "ppa:ansible/ansible"
+    state: present
+    update_cache: yes
+  when:
+     ansible_distribution == 'Ubuntu'
+     ansible_distribution_major_version >= '19'
+
+- name: configure debian ceph stable community repository
+  apt_repository:
+    filename: ceph
     repo: "deb {{ ceph_stable_repo }} {{ ceph_stable_distro_source|default(ansible_distribution_release) }} main"
     state: present
     update_cache: yes
+  when:
+    ansible_distribution == 'Ubuntu'
+    ansible_distribution_major_version < '19'
